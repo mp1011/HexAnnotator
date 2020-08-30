@@ -1,0 +1,91 @@
+﻿<Page
+    x:Class="HexAnnotator.Views.HexGrid"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:HexAnnotator.Views"
+    xmlns:models="using:HexAnnotator.Models"
+    xmlns:converters="using:HexAnnotator.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <converters:ByteToStringConverter x:Key="ByteToStringConverter"/>
+        <converters:EqualityToVisibilityConverter x:Key="EqualityToVisibilityConverter"/>
+
+        <Style x:Key="HexGridStyle" TargetType="GridView">
+            <Setter Property="ItemContainerStyle" Value="{StaticResource HexGridContainerStyle}"/>
+        </Style>
+
+        <x:Int32 x:Key="CellSize">32</x:Int32>
+        
+        <Style x:Key="HexGridContainerStyle" TargetType="GridViewItem">
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="MinWidth" Value="{StaticResource CellSize}"/>
+            <Setter Property="MinHeight" Value="{StaticResource CellSize}"/>
+            <Setter Property="MaxWidth" Value="{StaticResource CellSize}"/>
+            <Setter Property="MaxHeight" Value="{StaticResource CellSize}"/>
+        </Style>
+
+        <Style x:Key="CellTextStyle" TargetType="TextBox">
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+    </Page.Resources>
+
+    <StackPanel>
+
+        <StackPanel Orientation="Horizontal">
+
+            <RadioButton Content="Dec" GroupName="ByteView" IsChecked="{x:Bind ViewModel.DecimalView, Mode=TwoWay}"/>
+            <RadioButton Content="Hex" GroupName="ByteView" IsChecked="{x:Bind ViewModel.HexView, Mode=TwoWay}"/>
+            <RadioButton Content="Str" GroupName="ByteView" IsChecked="{x:Bind ViewModel.AsciiView, Mode=TwoWay}"/>
+
+            <CheckBox Content="Little Endian" IsChecked="{x:Bind ViewModel.IsLittleEndian, Mode=TwoWay}"/>
+            
+        </StackPanel>
+
+        <Grid>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Start" Grid.Column="0" Grid.Row="0"/>
+            <TextBox Text="{x:Bind ViewModel.RangeStart, Mode=TwoWay}" Grid.Column="0" Grid.Row="1"/>
+
+            <TextBlock Text="End" Grid.Column="1" Grid.Row="0"/>
+            <TextBox IsReadOnly="True" Text="{x:Bind ViewModel.RangeEnd, Mode=OneWay}" Grid.Column="1" Grid.Row="1"/>
+
+        </Grid>
+        
+        <GridView ItemsSource="{x:Bind ViewModel.Bytes, Mode=OneWay}" Style="{StaticResource HexGridStyle}">
+            <GridView.ItemTemplate>
+                <DataTemplate x:DataType="models:XByte">
+                    <StackPanel>
+
+                        <TextBox Style="{StaticResource CellTextStyle}" Visibility="{x:Bind View, Converter={StaticResource EqualityToVisibilityConverter}, ConverterParameter='Decimal', Mode=OneWay}" 
+                               Text="{x:Bind BigEndianValue, Mode=TwoWay, ConverterParameter='Decimal', Converter={StaticResource ByteToStringConverter}}"/>
+
+                        <TextBox Style="{StaticResource CellTextStyle}" Visibility="{x:Bind View, Converter={StaticResource EqualityToVisibilityConverter}, ConverterParameter='Hex', Mode=OneWay}" 
+                               Text="{x:Bind BigEndianValue, Mode=TwoWay, ConverterParameter='Hex', Converter={StaticResource ByteToStringConverter}}"/>
+
+                        <TextBox Style="{StaticResource CellTextStyle}" Visibility="{x:Bind View, Converter={StaticResource EqualityToVisibilityConverter}, ConverterParameter='Ascii', Mode=OneWay}" 
+                               Text="{x:Bind BigEndianValue, Mode=TwoWay, ConverterParameter='Ascii', Converter={StaticResource ByteToStringConverter}}"/>
+
+                    </StackPanel>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
+    </StackPanel>
+    
+</Page>
