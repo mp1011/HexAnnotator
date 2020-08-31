@@ -30,6 +30,8 @@ namespace HexAnnotator.Converters
 
             string str = value.ToString();
             byte b = 0;
+            if (String.IsNullOrEmpty(str))
+                return 0;
 
             switch (byteView)
             {

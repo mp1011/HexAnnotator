@@ -9,12 +9,20 @@ namespace HexAnnotator.ViewModels
     public class HexGridViewModel : ViewModelBase
     {
         private const int MaxRange = 700;
-
         private readonly FileReader _fileReader;
+        private readonly BinaryFileService _binaryFileService;
+
+        public HexGridViewModel(FileReader fileReader, BinaryFileService binaryFileService)
+        {
+            _fileReader = fileReader;
+            _binaryFileService = binaryFileService;
+        }
 
         public BinaryFile File { get; private set; }
 
         public ObservableCollection<XByte> Bytes { get; } = new ObservableCollection<XByte>();
+
+        public ObservableCollection<ByteRange> Blocks { get; } = new ObservableCollection<ByteRange>();
 
         public ByteView ByteView 
         {
@@ -98,16 +106,15 @@ namespace HexAnnotator.ViewModels
             }
         }
 
-        public HexGridViewModel(FileReader fileReader)
-        {
-            _fileReader = fileReader;
-        }
-
         public async Task LoadFile(string name)
         {
             File = await _fileReader.Read(name, Endian.Little);
             _range = new AddressRange(0, MaxRange-1);
             ExtractSelectedRange();
+
+            Blocks.Clear();
+            foreach (var block in _binaryFileService.SplitByRepeatingBytes(File, 255, 10))
+                Blocks.Add(block);
         }
 
         public void ExtractSelectedRange()

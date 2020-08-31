@@ -10,6 +10,7 @@ namespace HexAnnotator.IOC
         {
             SimpleIoc.Default.Register<FileReader>();
             SimpleIoc.Default.Register<HexGridViewModel>();
+            SimpleIoc.Default.Register<BinaryFileService>();
 
         }
     }

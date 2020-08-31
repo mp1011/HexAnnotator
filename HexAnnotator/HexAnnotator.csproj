@@ -134,6 +134,7 @@
     <Compile Include="Models\Endian.cs" />
     <Compile Include="Models\XByte.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\BinaryFileService.cs" />
     <Compile Include="Services\FileReader.cs" />
     <Compile Include="ViewModels\HexGridViewModel.cs" />
     <Compile Include="Views\HexGrid.xaml.cs">

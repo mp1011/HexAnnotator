@@ -30,48 +30,79 @@
             <Setter Property="MaxHeight" Value="{StaticResource CellSize}"/>
         </Style>
 
-        <Style x:Key="CellTextStyle" TargetType="TextBox">
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-            <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Style x:Key="CellContainerStyle" TargetType="StackPanel">
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
             <Setter Property="BorderThickness" Value="0"/>
         </Style>
+        
+        <Style x:Key="CellTextStyle" TargetType="TextBox">
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="HorizontalTextAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+        
     </Page.Resources>
 
-    <StackPanel>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2">
 
             <RadioButton Content="Dec" GroupName="ByteView" IsChecked="{x:Bind ViewModel.DecimalView, Mode=TwoWay}"/>
             <RadioButton Content="Hex" GroupName="ByteView" IsChecked="{x:Bind ViewModel.HexView, Mode=TwoWay}"/>
             <RadioButton Content="Str" GroupName="ByteView" IsChecked="{x:Bind ViewModel.AsciiView, Mode=TwoWay}"/>
 
             <CheckBox Content="Little Endian" IsChecked="{x:Bind ViewModel.IsLittleEndian, Mode=TwoWay}"/>
-            
+
         </StackPanel>
 
-        <Grid>
-
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
+        <Grid Grid.Row="1" Grid.Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Text="Start" Grid.Column="0" Grid.Row="0"/>
-            <TextBox Text="{x:Bind ViewModel.RangeStart, Mode=TwoWay}" Grid.Column="0" Grid.Row="1"/>
+            <StackPanel>
+                <TextBlock Text="Start" Grid.Column="0" Grid.Row="0"/>
+                <TextBox Text="{x:Bind ViewModel.RangeStart, Mode=TwoWay}" Grid.Column="0" Grid.Row="1"/>
+            </StackPanel>
 
-            <TextBlock Text="End" Grid.Column="1" Grid.Row="0"/>
-            <TextBox IsReadOnly="True" Text="{x:Bind ViewModel.RangeEnd, Mode=OneWay}" Grid.Column="1" Grid.Row="1"/>
+            <ListView ItemsSource="{x:Bind ViewModel.Blocks, Mode=OneWay}" Grid.Row="1"
+                      ScrollViewer.VerticalScrollBarVisibility="Visible" >
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:ByteRange">
+                        <StackPanel Tapped="Block_Tapped">
+                            <TextBlock>
+                                <Run>Start: </Run><Run Text="{x:Bind AddressRange.Start}"/>
+                            </TextBlock>
+                            <TextBlock>
+                                <Run>Length: </Run><Run Text="{x:Bind AddressRange.Length}"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
 
         </Grid>
-        
-        <GridView ItemsSource="{x:Bind ViewModel.Bytes, Mode=OneWay}" Style="{StaticResource HexGridStyle}">
+      
+        <GridView Grid.Row="1" Grid.Column="1"
+            ItemsSource="{x:Bind ViewModel.Bytes, Mode=OneWay}" Style="{StaticResource HexGridStyle}">
             <GridView.ItemTemplate>
                 <DataTemplate x:DataType="models:XByte">
-                    <StackPanel>
+                    <StackPanel Style="{StaticResource CellContainerStyle}">
 
                         <TextBox Style="{StaticResource CellTextStyle}" Visibility="{x:Bind View, Converter={StaticResource EqualityToVisibilityConverter}, ConverterParameter='Decimal', Mode=OneWay}" 
                                Text="{x:Bind BigEndianValue, Mode=TwoWay, ConverterParameter='Decimal', Converter={StaticResource ByteToStringConverter}}"/>
@@ -86,6 +117,7 @@
                 </DataTemplate>
             </GridView.ItemTemplate>
         </GridView>
-    </StackPanel>
+
+    </Grid>
     
 </Page>

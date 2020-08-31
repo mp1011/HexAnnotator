@@ -38,14 +38,14 @@ namespace HexAnnotator.Models
         {
             get
             {
-                if (Endianness == Endian.Big)
+                if (Endianness == Endian.Big || Value == 0 || Value==255)
                     return Value;
                 else
                     return Value.Invert();               
             }
             set
             {
-                if (Endianness == Endian.Big)
+                if (Endianness == Endian.Big || Value == 0 || Value == 255)
                     Value = value;
                 else
                     Value = value.Invert();

@@ -26,5 +26,16 @@ namespace HexAnnotator.Views
         {
             await ViewModel.LoadFile("TEST.bin");
         }
+
+        private void Block_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            if(sender is StackPanel sp)
+            {
+                if(sp.DataContext is ByteRange r)
+                {
+                    ViewModel.RangeStart = r.AddressRange.Start;
+                }
+            }
+        }
     }
 }
